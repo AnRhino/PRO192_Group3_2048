@@ -27,7 +27,7 @@
     On every step we move, one more tile gets added to the running game interface
     We have to combine the equal numbered tiles before the game ends
     We win the game if we get succeeded in having a tile of 2048 and a GAME WIN popup show
-    The game continues as far as the we do not get the game over
+    The game continues as far as we do not get the game over
     screen only if all the spaces get occupied by numbered tiles
 
 */
@@ -92,7 +92,7 @@ public class Game2048 extends JPanel {
         setPreferredSize(new Dimension(340, 400));
         setFocusable(true);
 
-        // Implementing the KeyBorad Buttons to function accordingly
+        // Implementing the KeyBoard Buttons to function accordingly
         addKeyListener(new KeyAdapter() {
             public void keyPressed(KeyEvent e) {
 
@@ -200,7 +200,7 @@ public class Game2048 extends JPanel {
         boolean needAddTile = false;
         for (int i = 0; i < 4; i++)
         {
-            // Calling the getline method and storing the value in the Tile Array
+            // Calling the getLine method and storing the value in the Tile Array
             // It will be called 4 times
             Tile[] line = getLine(i);
             Tile[] merged = mergeLine(moveLine(line));
@@ -334,7 +334,7 @@ public class Game2048 extends JPanel {
         return false;
     }
 
-    // Method to comapre the Tile lines
+    // Method to compare the Tile lines
     private boolean compare(Tile[] line1, Tile[] line2) {
         if (line1 == line2)
         {
@@ -437,7 +437,7 @@ public class Game2048 extends JPanel {
     // Tile type method to merge the lines
     private Tile[] mergeLine(Tile[] oldLine) {
 
-        // Linked list to store the them consecutively
+        // Linked list to store them consecutively
         LinkedList<Tile> list = new LinkedList<Tile>();
 
         // Traversing through the lines and adding to the score
@@ -530,7 +530,7 @@ public class Game2048 extends JPanel {
         Graphics2D g = ((Graphics2D) g2);
 
         // Aliasing to update the tiles location
-        // setRenderingHint to give it the hight quality 
+        // setRenderingHint to give it the high quality
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_NORMALIZE);
         int value = tile.value;

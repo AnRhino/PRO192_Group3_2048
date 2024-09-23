@@ -21,7 +21,7 @@ public class Tile {
         return value == 0;
     }
 
-    // To color the fore ground
+    // To color the foreground
     public Color getForeground() {
         return value < 16 ? new Color(0xffffff) :  new Color(0xf9f6f2);
     }
@@ -29,7 +29,7 @@ public class Tile {
     // Coloring the background of tiles according to the value they have
     public Color getBackground() {
 
-        // Settings thee colour for different values using switch
+        // Settings the colour for different values using switch
         switch (value)
         {
             case 2:    return new Color(0x3bcbff);
