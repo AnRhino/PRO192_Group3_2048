@@ -592,13 +592,13 @@ public class Game2048 extends JPanel {
             {
                 g.setFont(new Font(FONT_NAME, Font.ITALIC, 16));
                 g.setColor(new Color(128, 128, 128, 128));
-                g.drawString("Press ESC to play again", 80, getHeight() - 20);
+                g.drawString("Press ESC to play again", 80, getHeight() - 100);
             }
         }
 
         // Displaying the Score
-        g.setFont(new Font(FONT_NAME, Font.ITALIC, 18));
-        g.drawString("SCORE: " + myScore, 130, 365);
+        g.setFont(new Font(FONT_NAME, Font.BOLD, 30));
+        g.drawString("SCORE: " + myScore, 0, getHeight()-3);
 
     }
 
