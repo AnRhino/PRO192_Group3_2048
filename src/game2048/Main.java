@@ -16,7 +16,7 @@ public class Main {
         game2048.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 
         game2048.addWindowListener(new WindowAdapter() {
-
+            // Anonymous Class
             @Override
             public void windowClosing(WindowEvent e) {
                 int choice = JOptionPane.showConfirmDialog(null, "Do you want to EXIT", "Close", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
@@ -35,7 +35,7 @@ public class Main {
         // Setting the window form irresizeable
         game2048.setResizable(false);
 
-        // Adding the object of the Main Class in the form
+        // Adding the object of the Game2048 Class in the form
         game2048.add(new Game2048());
 
         // Not giving the location relative to the other frame
