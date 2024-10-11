@@ -23,7 +23,7 @@ public class Tile {
 
     // To color the foreground
     public Color getForeground() {
-        return value < 16 ? new Color(0xffffff) :  new Color(0xf9f6f2);
+        return value < 16 ? new Color(0x776e65) :  new Color(0xf9f6f2);
     }
 
     // Coloring the background of tiles according to the value they have
@@ -32,19 +32,19 @@ public class Tile {
         // Settings the colour for different values using switch
         switch (value)
         {
-            case 2:    return new Color(0x3bcbff);
-            case 4:    return new Color(0x003d99);
-            case 8:    return new Color(0x0bb5a1);
-            case 16:   return new Color(0x391be3);
-            case 32:   return new Color(0x6f00ff);
-            case 64:   return new Color(0x0acf7d);
-            case 128:  return new Color(0x307569);
-            case 256:  return new Color(0x668073);
-            case 512:  return new Color(0x0b423a);
-            case 1024: return new Color(0xa14df0);
-            case 2048: return new Color(0x296cf2);
+            case 2:    return new Color(0xeee4da);
+            case 4:    return new Color(0xede0c8);
+            case 8:    return new Color(0xf2b179);
+            case 16:   return new Color(0xf59563);
+            case 32:   return new Color(0xf67c5f);
+            case 64:   return new Color(0xf65e3b);
+            case 128:  return new Color(0xedcf72);
+            case 256:  return new Color(0xedcc61);
+            case 512:  return new Color(0xedc850);
+            case 1024: return new Color(0xedc53f);
+            case 2048: return new Color(0xedc22e);
         }
 
-        return new Color(0x62a5bd);
+        return new Color(0xcdc1b4);
     }
 }
