@@ -54,6 +54,7 @@ import java.awt.RenderingHints;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowEvent;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -72,7 +73,10 @@ public class Game2048 extends JPanel {
     private static final Color BG_COLOR = new Color(0x0d5154);
     private static final String FONT_NAME = "Times new Roman";
     private static final int TILE_SIZE = 64;
-    private static final int TILES_MARGIN = 16;
+    private static final int TILES_MARGIN = 13;
+
+    // File saves the highest score
+    private static final String HIGHEST_SCORE_FILE = "highest_score.txt";
 
     /* 
         Declaring the Array of the Tile type where Tile is the static class 
@@ -84,6 +88,10 @@ public class Game2048 extends JPanel {
     boolean myWin = false;
     boolean myLose = false;
     int myScore = 0;
+    int highestScore = readHighestScore();
+    private boolean isNewRecord = false;
+    private int target = 2048;
+
 
     // The Default Constructor
     public Game2048() {
@@ -97,59 +105,53 @@ public class Game2048 extends JPanel {
             public void keyPressed(KeyEvent e) {
 
                 // Checking if the pressed Key is "ESC"
-                if ((e.getKeyCode() == KeyEvent.VK_ESCAPE) || (e.getKeyCode() == KeyEvent.VK_R ) )
-                {
+                if ((e.getKeyCode() == KeyEvent.VK_ESCAPE) || (e.getKeyCode() == KeyEvent.VK_R ) ){
                     // Game will be restarted
-
                     confirmReset(null);
                 }
 
                 // Checking if the pressed Key is "F1"
-                if ((e.getKeyCode() == KeyEvent.VK_F1))
-                {
+                if ((e.getKeyCode() == KeyEvent.VK_F1)){
                     // Help
-
                     JOptionPane.showMessageDialog(null, "Welcome to Help Center\nPress R or ESC to restart\nPress Arrow keys or WASD to move\n");
                 }
 
                 // Checking if the space left or not to declare Game over
-                if (!canMove())
-                {
+                if (!canMove()){
                     myLose = true;
                 }
 
                 // Checking if we can press the directive keys or not
-                if (!myWin && !myLose)
-                {
+                if (!myWin && !myLose){
                     // We can move tiles only if the above conditions get true
                     // Move Up
-                    if((e.getKeyCode() == KeyEvent.VK_W) || (e.getKeyCode() == KeyEvent.VK_UP) )
-                    {
+                    if((e.getKeyCode() == KeyEvent.VK_W) || (e.getKeyCode() == KeyEvent.VK_UP) ){
                         up();
                     }
 
                     // Move Left
-                    if((e.getKeyCode() == KeyEvent.VK_A) || (e.getKeyCode() == KeyEvent.VK_LEFT))
-                    {
+                    if((e.getKeyCode() == KeyEvent.VK_A) || (e.getKeyCode() == KeyEvent.VK_LEFT)){
                         left();
                     }
 
                     // Move Down
-                    if((e.getKeyCode() == KeyEvent.VK_S) || (e.getKeyCode() == KeyEvent.VK_DOWN))
-                    {
+                    if((e.getKeyCode() == KeyEvent.VK_S) || (e.getKeyCode() == KeyEvent.VK_DOWN)){
                         down();
                     }
 
                     // Move Right
-                    if((e.getKeyCode() == KeyEvent.VK_D) || (e.getKeyCode() == KeyEvent.VK_RIGHT))
-                    {
+                    if((e.getKeyCode() == KeyEvent.VK_D) || (e.getKeyCode() == KeyEvent.VK_RIGHT)){
                         right();
                     }
                 }
 
+                // Checking if the Game Win or not
+                if (myWin){
+                    confirmContinue(null);
+                }
+
                 // Checking if the Game Over or not
-                if (!myWin && !canMove())
-                {
+                if (!myWin && !canMove()){
                     myLose = true;
                 }
 
@@ -160,18 +162,27 @@ public class Game2048 extends JPanel {
             }
         });
 
-        // Rest the Game
+        // Reset the Game
         resetGame();
     }
 
     // Method to Confirm Close or Reset
-    public void confirmReset(WindowEvent e)
-    {
-        int choice = JOptionPane.showConfirmDialog(null,"Do you want to RESTART the Game");
+    public void confirmReset(WindowEvent e){
+        int choice = JOptionPane.showConfirmDialog(null,"Do you want to RESTART the Game?");
 
-        if( choice == JOptionPane.YES_OPTION)
-        {
+        if( choice == JOptionPane.YES_OPTION){
+            target = 2048;
             resetGame();
+        }
+    }
+
+    // Method to Confirm Coutinue or Reset
+    public void confirmContinue(WindowEvent e){
+        int choice = JOptionPane.showConfirmDialog(null,"You win!\nDo you want to try Endless Mode?");
+
+        if( choice == JOptionPane.YES_OPTION){
+            target = 1;
+            myWin = false;
         }
     }
 
@@ -182,11 +193,11 @@ public class Game2048 extends JPanel {
         myScore = 0;
         myWin = false;
         myLose = false;
+        isNewRecord = false;
 
         // Defining the Array
         myTiles = new Tile[4 * 4];
-        for (int i = 0; i < myTiles.length; i++)
-        {
+        for (int i = 0; i < myTiles.length; i++){
             myTiles[i] = new Tile();
         }
 
@@ -198,8 +209,7 @@ public class Game2048 extends JPanel {
     // Method to align the tiles to the left
     public void left() {
         boolean needAddTile = false;
-        for (int i = 0; i < 4; i++)
-        {
+        for (int i = 0; i < 4; i++){
             // Calling the getLine method and storing the value in the Tile Array
             // It will be called 4 times
             Tile[] line = getLine(i);
@@ -207,15 +217,13 @@ public class Game2048 extends JPanel {
 
             // Calling the SetLine Method by passing the index and the  merged Array
             setLine(i, merged);
-            if (!needAddTile && !compare(line, merged))
-            {
+            if (!needAddTile && !compare(line, merged)){
                 needAddTile = true;
             }
         }
 
         // Add the new tile
-        if (needAddTile)
-        {
+        if (needAddTile){
             addTile();
         }
     }
@@ -273,8 +281,7 @@ public class Game2048 extends JPanel {
         // List of Tile type
         // Calling the availableSpace method of the List Type 
         List<Tile> list = availableSpace();
-        if (!availableSpace().isEmpty())
-        {
+        if (!availableSpace().isEmpty()){
             // If Space is not empty
 
             // Creating an Index to store the random generated value
@@ -309,23 +316,18 @@ public class Game2048 extends JPanel {
     }
 
     // Method to check if the tile can move
-    boolean canMove()
-    {
+    boolean canMove(){
         // Checking if the PlayGround Interface has space left or not
-        if (!isFull())
-        {
+        if (!isFull()){
             return true;
         }
 
         // Checking at which index the tiles has value
-        for (int x = 0; x < 4; x++)
-        {
-            for (int y = 0; y < 4; y++)
-            {
+        for (int x = 0; x < 4; x++){
+            for (int y = 0; y < 4; y++){
                 // Calling the tileAt function if it has any value or not
                 Tile t = tileAt(x, y);
-                if ((x < 3 && t.value == tileAt(x + 1, y).value) || ((y < 3) && t.value == tileAt(x, y + 1).value))
-                {
+                if ((x < 3 && t.value == tileAt(x + 1, y).value) || ((y < 3) && t.value == tileAt(x, y + 1).value)){
                     return true;
                 }
             }
@@ -336,20 +338,15 @@ public class Game2048 extends JPanel {
 
     // Method to compare the Tile lines
     private boolean compare(Tile[] line1, Tile[] line2) {
-        if (line1 == line2)
-        {
+        if (line1 == line2){
             return true;
-        }
-        else if (line1.length != line2.length)
-        {
+        } else if (line1.length != line2.length){
             return false;
         }
 
         // Comparing the indexes of the lines
-        for (int i = 0; i < line1.length; i++)
-        {
-            if (line1[i].value != line2[i].value)
-            {
+        for (int i = 0; i < line1.length; i++){
+            if (line1[i].value != line2[i].value){
                 return false;
             }
         }
@@ -364,12 +361,9 @@ public class Game2048 extends JPanel {
         Tile[] newTiles = new Tile[4 * 4];
         int offsetX = 3, offsetY = 3;
 
-        if (angle == 90)
-        {
+        if (angle == 90){
             offsetY = 0;
-        }
-        else if (angle == 270)
-        {
+        } else if (angle == 270){
             offsetX = 0;
         }
 
@@ -380,10 +374,8 @@ public class Game2048 extends JPanel {
         int sin = (int) Math.sin(rad);
 
         // Rotating the  tiles
-        for (int x = 0; x < 4; x++)
-        {
-            for (int y = 0; y < 4; y++)
-            {
+        for (int x = 0; x < 4; x++){
+            for (int y = 0; y < 4; y++){
                 // OffSet value to balance the angle
                 int newX = (x * cos) - (y * sin) + offsetX;
                 int newY = (x * sin) + (y * cos) + offsetY;
@@ -403,30 +395,24 @@ public class Game2048 extends JPanel {
 
         // Linked list to store the sequence of the tiles
         LinkedList<Tile> tileLinkedList = new LinkedList<Tile>();
-        for (int i = 0; i < 4; i++)
-        {
+        for (int i = 0; i < 4; i++){
             // Checking if the old Line sequence of tiles is empty
-            if (!oldLine[i].isEmpty())
-            {
+            if (!oldLine[i].isEmpty()){
                 // Adding the tile if the old line sequence is empty
                 tileLinkedList.addLast(oldLine[i]);
             }
         }
 
         // Checking if the new linked list has size Zero means no space available
-        if (tileLinkedList.isEmpty())
-        {
+        if (tileLinkedList.isEmpty()) {
             return oldLine;
-        }
-        else
-        {
+        } else{
             // Creating a new Array
             Tile[] newLine = new Tile[4];
             ensureSize(tileLinkedList, 4);
 
             // Placing the tiles out of the linked list
-            for (int i = 0; i < 4; i++)
-            {
+            for (int i = 0; i < 4; i++){
                 newLine[i] = tileLinkedList.removeFirst();
             }
 
@@ -441,18 +427,14 @@ public class Game2048 extends JPanel {
         LinkedList<Tile> list = new LinkedList<Tile>();
 
         // Traversing through the lines and adding to the score
-        for (int i = 0; i < 4 && !oldLine[i].isEmpty(); i++)
-        {
+        for (int i = 0; i < 4 && !oldLine[i].isEmpty(); i++){
             int num = oldLine[i].value;
-            if (i < 3 && oldLine[i].value == oldLine[i + 1].value)
-            {
+            if (i < 3 && oldLine[i].value == oldLine[i + 1].value){
                 num *= 2;
                 myScore += num;
-                int ourTarget = 2048;
 
                 // Declare the Game Win if the target achieved
-                if (num == ourTarget)
-                {
+                if (num == target){
                     myWin = true;
                 }
 
@@ -464,12 +446,9 @@ public class Game2048 extends JPanel {
         }
 
         // Checking if the list size is zero or not
-        if (list.isEmpty())
-        {
+        if (list.isEmpty()){
             return oldLine;
-        }
-        else
-        {
+        } else{
             ensureSize(list, 4);
             return list.toArray(new Tile[4]);
         }
@@ -491,8 +470,7 @@ public class Game2048 extends JPanel {
 
         // Creating an Array of Tile type
         Tile[] result = new Tile[4];
-        for (int i = 0; i < 4; i++)
-        {
+        for (int i = 0; i < 4; i++){
             // Storing the values in result Array
             result[i] = tileAt(i, index);
         }
@@ -510,15 +488,63 @@ public class Game2048 extends JPanel {
     public void paint(Graphics g) {
         super.paint(g);
 
-        // Setting the background Colour
+        // Painting the background Colour
         g.setColor(BG_COLOR);
         g.fillRect(0, 0, this.getSize().width, this.getSize().height);
 
-        for (int y = 0; y < 4; y++)
-        {
-            for (int x = 0; x < 4; x++)
-            {
+        // Draw the tiles
+        for (int y = 0; y < 4; y++){
+            for (int x = 0; x < 4; x++){
                 drawTile(g, myTiles[x + y * 4], x, y);
+            }
+        }
+
+        // Display the Score
+        g.setFont(new Font(FONT_NAME, Font.BOLD, 18));
+        g.setColor(Color.BLACK);
+        g.drawString("Score: " + myScore, 200, 350);
+        g.drawString("Highest Score: " + highestScore, 30, 350);
+
+        // Display a NEW RECORD message
+        if (isNewRecord) {
+            g.setColor(Color.ORANGE);
+            g.setFont(new Font(FONT_NAME, Font.BOLD, 16));
+            g.drawString("NEW RECORD!", 100, 330);
+        }
+
+        // Declaring the Win or Lose
+        if (myWin || myLose) {
+
+            g.setColor(Color.WHITE);
+            g.fillRect(0, 0, getWidth(), getHeight());
+
+            g.setColor(Color.BLACK);
+            g.setFont(new Font(FONT_NAME, Font.BOLD, 36));
+
+            String resultText = myWin ? "You Win!" : "Game Over!";
+            FontMetrics fm = g.getFontMetrics();
+            int resultWidth = fm.stringWidth(resultText);
+            g.drawString(resultText, (getWidth() - resultWidth) / 2, getHeight() / 2 - 20);
+
+            String finalScoreText = "SCORE: " + myScore;
+            int scoreWidth = fm.stringWidth(finalScoreText);
+            g.drawString(finalScoreText, (getWidth() - scoreWidth) / 2, getHeight() / 2 + 20);
+
+            g.setFont(new Font(FONT_NAME, Font.BOLD, 24));
+            String highestText = "Highest: " + highestScore;
+            int highestWidth = fm.stringWidth(highestText);
+            g.drawString(highestText, (getWidth() - highestWidth) / 2, getHeight() / 2 + 60);
+
+            g.setFont(new Font(FONT_NAME, Font.ITALIC, 16));
+            g.drawString("Press ESC to play again", 80, getHeight() - 50);
+
+            if (isNewRecord) {
+                g.setColor(Color.RED);
+                g.setFont(new Font(FONT_NAME, Font.BOLD, 28));
+                String newRecordText = "New Record!";
+                int newRecordWidth = fm.stringWidth(newRecordText);
+                g.drawString(newRecordText, (getWidth() - newRecordWidth) / 2, getHeight() - 90);
+                saveHighestScore();
             }
         }
     }
@@ -561,50 +587,37 @@ public class Game2048 extends JPanel {
         final int h = -(int) fm.getLineMetrics(s, g).getBaselineOffsets()[2];
 
         // Set the position of the number
-        if (value != 0)
-        {
+        if (value != 0){
             g.drawString(s, xOffset + (TILE_SIZE - w) / 2, yOffset + TILE_SIZE - (TILE_SIZE - h) / 2 - 2);
         }
 
-        // Declaring the Win or Lose
-        if (myWin || myLose)
-        {
-            g.setColor(new Color(255, 255, 255, 30));
-            g.fillRect(0, 0, getWidth(), getHeight());
-            g.setColor(new Color(78, 139, 202));
-            g.setFont(new Font(FONT_NAME, Font.ITALIC, 48));
-
-            // Declaring the Win
-            if (myWin)
-            {
-                g.drawString("You won!", 68, 150);
-            }
-
-            // Declaring the Lose
-            if (myLose)
-            {
-                g.drawString("Game over!", 50, 130);
-                g.drawString("You lose!", 75, 200);
-            }
-
-            // Setting the Font, Colour and the Message
-            if (myWin || myLose)
-            {
-                g.setFont(new Font(FONT_NAME, Font.ITALIC, 16));
-                g.setColor(new Color(128, 128, 128, 128));
-                g.drawString("Press ESC to play again", 80, getHeight() - 100);
-            }
+        if (myScore > highestScore) {
+            highestScore = myScore;
+            isNewRecord = true;
         }
-
-        // Displaying the Score
-        g.setFont(new Font(FONT_NAME, Font.BOLD, 30));
-        g.drawString("SCORE: " + myScore, 0, getHeight()-3);
 
     }
 
     // Method to Set the margins
     private static int offsetCorns(int arg) {
         return arg * (TILES_MARGIN + TILE_SIZE) + TILES_MARGIN;
+    }
+
+    private int readHighestScore() {
+        try (BufferedReader reader = new BufferedReader(new FileReader(HIGHEST_SCORE_FILE))) {
+            String line = reader.readLine();
+            return line != null ? Integer.parseInt(line) : 0;
+        } catch (IOException e) {
+            return 0;
+        }
+    }
+
+    private void saveHighestScore() {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(HIGHEST_SCORE_FILE))) {
+            writer.write(String.valueOf(highestScore));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 }   // End of the Game2048 Class
