@@ -97,7 +97,7 @@ public class Game2048 extends JPanel {
     public Game2048() {
 
         // Setting the Dimensions of the Windows form
-        setPreferredSize(new Dimension(340, 400));
+        setPreferredSize(new Dimension(340, 410));
         setFocusable(true);
 
         // Implementing the KeyBoard Buttons to function accordingly
@@ -176,7 +176,7 @@ public class Game2048 extends JPanel {
         }
     }
 
-    // Method to Confirm Coutinue or Reset
+    // Method to Confirm Continue or Reset
     public void confirmContinue(WindowEvent e){
         int choice = JOptionPane.showConfirmDialog(null,"You win!\nDo you want to try Endless Mode?");
 
@@ -500,16 +500,16 @@ public class Game2048 extends JPanel {
         }
 
         // Display the Score
-        g.setFont(new Font(FONT_NAME, Font.BOLD, 18));
-        g.setColor(Color.BLACK);
-        g.drawString("Score: " + myScore, 200, 350);
-        g.drawString("Highest Score: " + highestScore, 30, 350);
+        g.setFont(new Font(FONT_NAME, Font.BOLD, 20));
+        g.setColor(Color.WHITE);
+        g.drawString("Score: " + myScore, 200, 20);
+        g.drawString("Highest Score: " + highestScore, 5, 20);
 
         // Display a NEW RECORD message
         if (isNewRecord) {
             g.setColor(Color.ORANGE);
-            g.setFont(new Font(FONT_NAME, Font.BOLD, 16));
-            g.drawString("NEW RECORD!", 100, 330);
+            g.setFont(new Font(FONT_NAME, Font.BOLD, 18));
+            g.drawString("NEW RECORD!", 100, 45);
         }
 
         // Declaring the Win or Lose
@@ -563,7 +563,7 @@ public class Game2048 extends JPanel {
 
         // Setting the margins
         int xOffset = offsetCorns(x);
-        int yOffset = offsetCorns(y);
+        int yOffset = offsetCorns(y) + 45;
 
         // Setting the background Colour
         g.setColor(tile.getBackground());

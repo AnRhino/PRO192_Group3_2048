@@ -30,7 +30,7 @@ public class Main {
         });
 
         // Setting the size of the window interface
-        game2048.setSize(340, 400);
+        game2048.setSize(340, 410);
 
         // Setting the window form irresizeable
         game2048.setResizable(false);
